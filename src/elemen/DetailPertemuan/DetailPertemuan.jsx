@@ -95,7 +95,7 @@ export default function DetailPertemuan() {
   //   }, []);
 
   const [dataPengumpulan, setDataPengumpulan] = useState(); 
-  // console.log(dataPengumpulan.file_pengumpulan)
+  // console.log(dataPengumpulan)
   const getDataPengumpulan = async () => {
     try {
       const storage = JSON.parse(window.localStorage.getItem("data"));
@@ -224,11 +224,16 @@ export default function DetailPertemuan() {
           setMessageFile("isi Data dulu");
           return false;
         }
+        const config = {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        };
         try {
           const data = await axios.post(
             `http://127.0.0.1:8000/api/pengumpulan_tugas/upload?token=` +
               window.localStorage.getItem("token"),
-              dataUploadPengumpulan
+              dataUploadPengumpulan, config
           );
           setMessage(data.data.message); 
             getDataPengumpulan(); 
@@ -372,10 +377,15 @@ export default function DetailPertemuan() {
   const AksihandleEditTugas = async (event) =>{
     event.preventDefault();
     try {   
+      const config = {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      };
           const data = await axios.put(
             `http://127.0.0.1:8000/api/pengumpulan_tugas/${idpengumpulan_tugas.id}?token=` +
               window.localStorage.getItem("token"),
-              dataEditUploadPengumpulan
+              dataEditUploadPengumpulan, config
           );
           setMessage(data.data.message); 
             getDataPengumpulan(); 
@@ -534,7 +544,7 @@ export default function DetailPertemuan() {
                     </div>
                     <div className="info-child">
                       <div className="deskripsi">File Tugas :</div>
-                      <div className="deskripsi mb-1 d-flex"> <img src={Task} alt="" /><a href="" className="abu link-pertemuan" download={tugas.file_tugas}>{tugas.file_tugas}</a></div>
+                      <div className="deskripsi mb-1 d-flex"> <img src={Task} alt="" /><a href={tugas.file_tugas} target="_blank" className="abu link-pertemuan" download>{tugas.file_tugas}</a></div>
                       <div className="deskripsi">Deskripsi Tugas :</div>
                       <div className="deskripsi">{tugas.deskripsi_tugas}</div>
                     </div>
@@ -624,12 +634,26 @@ export default function DetailPertemuan() {
                   </>
                 ) : (
                   <>
-                    <button type="submit" className="button-form" onClick={() => handleEditTugas(dataPengumpulan.id)}>
+                    {/* <button type="submit" className="button-form" onClick={() => handleEditTugas(dataPengumpulan.id)}>
                       Edit Tugas
-                    </button>
-                    <button type="submit" className="button-form" onClick={() => handleHapusTugas(dataPengumpulan.id)}>
+                    </button> */}
+                    {/* <button type="submit" className="button-form" onClick={() => handleHapusTugas(dataPengumpulan.id)}>
                       Hapus Tugas
-                    </button>
+                    </button> */}
+                    {kondisiUpload && kondisiUpload.cek == 1 &&  <button
+                      type="submit"
+                      className="button-form"
+                      onClick={() => handleHapusTugas(dataPengumpulan.id)}
+                    >
+                      Hapus Tugas
+                    </button> }
+                  {kondisiUpload && kondisiUpload.cek == 0 &&
+                  <button
+                  type="submit"
+                  className="button-form"disabled
+                  >
+                  Hapus Tugas
+                  </button>}
                   </>
                 )}
               </div>
@@ -651,9 +675,8 @@ export default function DetailPertemuan() {
                         />  */}
                       <input type="file" name="uploadfile" id="uploadfile" 
                       onChange={(e) => {
-                        setDataUploadPengumpulan({ ...dataUploadPengumpulan, file_pengumpulan: e.target.value });
-                        }}
-                        value={dataUploadPengumpulan.file_pengumpulan}
+                        setDataUploadPengumpulan({ ...dataUploadPengumpulan, file_pengumpulan: e.target.files[0] });
+                        }} 
                         /> 
                   </div>
                   <div className="box-form">
@@ -689,12 +712,12 @@ export default function DetailPertemuan() {
                    <div className="">{messagefile && messagefile}</div>
                 <form action="" onSubmit={AksihandleEditTugas}>
                   <div className="box-form"> 
-                      <label htmlFor="uploadfile">Upload File</label> {dataPengumpulan && <input type="text" value={dataPengumpulan.file_pengumpulan} readOnly/> }
+                      <label htmlFor="uploadfile">Upload File</label> 
+                      {/* {dataPengumpulan && <input type="text" value={dataPengumpulan.file_pengumpulan} readOnly/> } */}
                       <input type="file" name="" id="uploadfile" 
                       onChange={(e) => {
-                        setDataEditUploadPengumpulan({ ...dataEditUploadPengumpulan, file_pengumpulan: e.target.value });
-                        }}
-                        value={dataEditUploadPengumpulan.file_pengumpulan}
+                        setDataEditUploadPengumpulan({ ...dataEditUploadPengumpulan, file_pengumpulan: e.target.files[0]});
+                        }} 
                         />   
                         
                   </div>

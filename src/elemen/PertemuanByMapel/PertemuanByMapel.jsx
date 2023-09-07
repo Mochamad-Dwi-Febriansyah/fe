@@ -36,7 +36,7 @@ export default function PertemuanByMapel() {
     judul_materi: "",
     file_materi: "",
   });
-  // console.log(pertemuan)
+  // console.log(dataTugas)
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -100,10 +100,16 @@ export default function PertemuanByMapel() {
   window.localStorage.setItem("nama_kelas", JSON.stringify(namaKelas));
   window.localStorage.setItem("nama_mapel", JSON.stringify(namaMapel));
 
+  // console.log(dataTugas.file_tugas.name)
   const handleSubmitTugas = async (event) => {
     event.preventDefault();
     try {
       if (USER().nisn == "admin") {
+        const config = {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        };
         const dtpost = {
           pertemuan_id: dataTugas.pertemuan_id,
           judul_tugas: dataTugas.judul_tugas,
@@ -115,7 +121,7 @@ export default function PertemuanByMapel() {
         const data = await axios.post(
           `http://127.0.0.1:8000/api/tugas?token=` +
             window.localStorage.getItem("token"),
-          dtpost
+          dtpost,config
         );
         setMessage(data.data.message);
         getAllPertemuanByMapel();
@@ -128,6 +134,11 @@ export default function PertemuanByMapel() {
 
   const handleSubmitMateri = async (event) => {
     event.preventDefault();
+    const config = {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    };
     try {
       if (USER().nisn == "admin") {
         const dtpost = {
@@ -138,7 +149,7 @@ export default function PertemuanByMapel() {
         const data = await axios.post(
           `http://127.0.0.1:8000/api/materi?token=` +
             window.localStorage.getItem("token"),
-          dtpost
+          dtpost, config
         );
         setMessage(data.data.message);
         getAllPertemuanByMapel();
@@ -415,10 +426,9 @@ export default function PertemuanByMapel() {
                         onChange={(e) => {
                           setDataTugas({
                             ...dataTugas,
-                            file_tugas: e.target.value,
+                            file_tugas: e.target.files[0],
                           });
                         }}
-                        value={dataTugas.file_tugas}
                         required
                       />
                     </div>
@@ -478,10 +488,9 @@ export default function PertemuanByMapel() {
                         onChange={(e) => {
                           setDataMateri({
                             ...dataMateri,
-                            file_materi: e.target.value,
+                            file_materi: e.target.files[0]
                           });
-                        }}
-                        value={dataMateri.file_materi}
+                        }} 
                         required
                       />
                     </div>
